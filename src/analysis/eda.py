@@ -7,14 +7,31 @@ import matplotlib.font_manager as fm
 import seaborn as sns
 from pathlib import Path
 import warnings
+import platform
 warnings.filterwarnings('ignore')
 
 # 한글 폰트 설정
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['font.family'] = 'Malgun Gothic' # Windows
-plt.rcParams['font.family'] = 'AppleGothic' # Mac
-# 마이너스 기호 깨짐 방지
-plt.rcParams['axes.unicode_minus'] = False
+import platform
+
+def set_korean_font():
+    system = platform.system()
+    if system == 'Windows':
+        try:
+            plt.rcParams['font.family'] = 'Malgun Gothic'
+        except:
+            plt.rcParams['font.family'] = 'DejaVu Sans'
+    elif system == 'Darwin':  # Mac
+        try:
+            plt.rcParams['font.family'] = 'AppleGothic'
+        except:
+            plt.rcParams['font.family'] = 'DejaVu Sans'
+    else:  # Linux
+        plt.rcParams['font.family'] = 'DejaVu Sans'
+    
+    plt.rcParams['axes.unicode_minus'] = False
+
+# 폰트 설정 적용
+set_korean_font()
 
 class EDAAnalyzer:
     def __init__(self, processed_data_dir='data/processed'):

@@ -121,7 +121,7 @@ def safe_import():
     
     try:
         # 4. EDA 모듈
-        from src.analysis.eda import run_complete_analysis
+        from src.analysis.eda import run_complete_analysis, EDAAnalyzer
         modules['eda'] = True
         print("✅ eda 모듈 import 성공")
     except ImportError as e:
@@ -195,19 +195,37 @@ def run_preprocessing_phase():
         return None
 
 def run_eda_phase():
-    """4단계: 탐색적 데이터 분석"""
+    """4단계: 탐색적 데이터 분석 (EDA) - 자동 실행"""
     print("\n" + "="*50)
-    print("4️⃣ 탐색적 데이터 분석 단계")
+    print("4️⃣ 탐색적 데이터 분석 (EDA) 단계")
     print("="*50)
-    
+    print("📊 전처리 완료 후 자동으로 EDA를 실행합니다...")
+
     try:
+        # 방법 1: run_complete_analysis 함수 사용
         from src.analysis.eda import run_complete_analysis
         run_complete_analysis()
-        print("✅ EDA 완료")
+        print("✅ EDA (방법 1) 완료")
         return True
-    except Exception as e:
-        print(f"❌ EDA 실패: {e}")
-        return False
+    except Exception as e1:
+        print(f"⚠️ EDA 방법 1 실패: {e1}")
+        
+        try:
+            # 방법 2: EDAAnalyzer 클래스 직접 사용
+            from src.analysis.eda import EDAAnalyzer
+            analyzer = EDAAnalyzer()
+            analyzer.run_comprehensive_eda()
+            print("✅ EDA (방법 2) 완료")
+            return True
+        except Exception as e2:
+            print(f"❌ EDA 완전 실패:")
+            print(f"   방법 1 오류: {e1}")
+            print(f"   방법 2 오류: {e2}")
+            print("💡 EDA를 수동으로 실행하려면 다음 명령어를 사용하세요:")
+            print("   from src.analysis.eda import EDAAnalyzer")
+            print("   analyzer = EDAAnalyzer()")
+            print("   analyzer.run_comprehensive_eda()")
+            return False
 
 def run_geographic_phase():
     """5단계: 지리적 분석"""
@@ -242,6 +260,7 @@ def run_validation_phase():
 def main():
     """전체 프로세스 실행"""
     print("🚀 전기차 충전소 최적 위치 선정 프로젝트 시작!")
+    print("📋 실행 순서: 환경설정 → 데이터로딩 → 전처리 → EDA → 지리적분석 → 검증")
     print("="*60)
     
     # 모듈 import 상태 확인
@@ -280,9 +299,18 @@ def main():
     
     # 4. 탐색적 데이터 분석
     if modules_status.get('eda', False):
+        print("\n🔄 전처리 완료! 이제 EDA를 자동으로 실행합니다...")
         results['eda'] = run_eda_phase()
+        
+        if results['eda']:
+            print("\n🎯 EDA 결과 확인:")
+            print("   📂 EDA 결과: outputs/eda/")
+            print("   📊 시각화 차트: outputs/eda/*.png")
+            print("   📝 인사이트 리포트: outputs/eda/eda_insights.txt")
     else:
         print("\n⚠️ EDA 모듈이 없어 건너뜁니다.")
+        print("💡 EDA를 수동으로 실행하려면:")
+        print("   python -c \"from src.analysis.eda import EDAAnalyzer; EDAAnalyzer().run_comprehensive_eda()\"")
         results['eda'] = False
     
     # 5. 지리적 분석
@@ -321,6 +349,18 @@ def main():
     
     if success_count == total_count:
         print("\n🎉 모든 프로세스가 성공적으로 완료되었습니다!")
+        print("\n📂 결과 확인:")
+        print("   • 전처리된 데이터: data/processed/")
+        print("   • EDA 결과: outputs/eda/")
+        print("   • 시각화 차트: outputs/eda/*.png")
+        
+    elif results.get('eda', False):
+        print(f"\n✅ 핵심 프로세스 (전처리 + EDA)가 완료되었습니다!")
+        print("📊 EDA 결과 확인:")
+        print("   • EDA 차트: outputs/eda/charging_by_province.png")
+        print("   • EDA 차트: outputs/eda/charging_type_distribution.png") 
+        print("   • EDA 리포트: outputs/eda/eda_insights.txt")
+
     else:
         print(f"\n⚠️ 일부 프로세스에서 문제가 발생했습니다.")
         print("개별 모듈을 직접 실행해보시기 바랍니다.")
@@ -372,6 +412,34 @@ def check_project_structure():
         print(f"⚠️ 누락된 __init__.py 파일: {missing_init}")
         print("빈 __init__.py 파일들을 생성하는 것을 권장합니다.")
 
+# 개별 실행 함수들
+def run_only_eda():
+    """EDA만 개별 실행하는 함수"""
+    print("📊 EDA만 개별 실행합니다...")
+    
+    try:
+        from src.analysis.eda import EDAAnalyzer
+        analyzer = EDAAnalyzer()
+        result = analyzer.run_comprehensive_eda()
+        print("✅ EDA 개별 실행 완료!")
+        return result
+    except Exception as e:
+        print(f"❌ EDA 개별 실행 실패: {e}")
+        return None
+    
+def run_preprocessing_only():
+    """전처리만 실행하는 함수"""
+    print("🔧 전처리만 실행합니다...")
+
+    try:
+        from src.preprocessing.data_cleaner import run_all_preprocessing
+        result = run_all_preprocessing()
+        print("✅ 전처리 완료!")
+        return result
+    except Exception as e:
+        print(f"❌ 전처리 실패: {e}")
+        return None
+    
 if __name__ == "__main__":
     # 프로젝트 구조 확인
     check_project_structure()
