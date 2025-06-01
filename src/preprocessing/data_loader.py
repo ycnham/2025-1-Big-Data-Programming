@@ -57,7 +57,7 @@ class DataLoader:
                 'description': '전기차 충전서비스 코드표 (참고자료)'
             },
             'public_parking': {
-                'file': '월별소통정보(구간별-첨두시별).csv',
+                'file': '월별 소통정보 (구간별-첨두시별).csv',
                 'description': '월별 교통소통 정보'
             },
             'gov_charging_service': {
@@ -65,7 +65,7 @@ class DataLoader:
                 'description': '한국전력공사 전기차 충전서비스 상담내역'
             },
             'charging_facility_management': {
-                'file': '한국환경공단_전기차충전소위치및운영정보(충전소ID포함)_20230531.csv',
+                'file': '한국환경공단_전기차 충전소 위치 및 운영정보(충전소 ID 포함)_20230531.csv',
                 'description': '한국환경공단 전기차 충전소 위치 및 운영 정보'
             }
         }
