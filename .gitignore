@@ -1,6 +1,8 @@
 data/raw/*.csv
 data/raw/*.xls
 data/raw/*.xlsx
+data/processed/*.csv*
+data/processed/*.json*
 *.pyc
 __pycache__/
 .jupyter/
