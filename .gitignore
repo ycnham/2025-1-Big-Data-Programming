@@ -1,0 +1,9 @@
+data/raw/*.csv
+data/raw/*.xls
+data/raw/*.xlsx
+*.pyc
+__pycache__/
+.jupyter/
+.ipynb_checkpoints/
+outputs/plots/*.png
+outputs/maps/*.html
