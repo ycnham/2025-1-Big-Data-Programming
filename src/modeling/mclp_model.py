@@ -71,3 +71,50 @@ def solve_mclp(
         print(f"총 커버된 수요: {round(total_demand, 2)}")
 
     return df
+
+# ============================================
+# 📊 민감도 분석 함수
+# ============================================
+
+def run_sensitivity_analysis(
+    df: pd.DataFrame,
+    coverage_radii: list = [0.01, 0.02, 0.03],
+    facility_limits: list = [10, 20, 30],
+    demand_column: str = 'predicted_demand_score'
+) -> pd.DataFrame:
+    """
+    MCLP 민감도 분석: 반경(r)과 설치 수(p)의 변화에 따른 커버 수요 분석
+
+    Parameters:
+    - df: 입력 데이터프레임 (위경도, 수요 포함)
+    - coverage_radii: 커버 반경 리스트 (float, 단위: degree)
+    - facility_limits: 설치 가능 수 리스트 (int)
+    - demand_column: 예측 수요 컬럼명
+
+    Returns:
+    - pd.DataFrame: 시나리오별 커버 수요 및 커버율 결과 테이블
+    """
+    results = []
+
+    for r in coverage_radii:
+        for p in facility_limits:
+            result_df = solve_mclp(
+                df.copy(),
+                coverage_radius=r,
+                facility_limit=p,
+                demand_column=demand_column,
+                verbose=False
+            )
+            covered = result_df[result_df['selected'] == 1][demand_column].sum()
+            total = result_df[demand_column].sum()
+            rate = covered / total * 100
+
+            results.append({
+                'coverage_radius': r,
+                'facility_limit': p,
+                'covered_demand': round(covered, 2),
+                'total_demand': round(total, 2),
+                'coverage_rate': round(rate, 2)
+            })
+
+    return pd.DataFrame(results)
