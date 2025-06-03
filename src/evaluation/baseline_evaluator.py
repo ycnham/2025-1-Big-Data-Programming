@@ -24,7 +24,7 @@ def evaluate_existing_stations(
     """
 
     # 위도, 경도 추출
-    if coord_col in station_df.columns:
+    if coord_col and coord_col in station_df.columns:
         station_df[[lat_col, lon_col]] = station_df[coord_col].str.split(",", expand=True).astype(float)
 
     # 가장 가까운 격자 grid_id 찾기
