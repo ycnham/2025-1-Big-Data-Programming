@@ -1,14 +1,16 @@
 전기차 충전소 최적화 프로젝트 - EDA 종합 분석 리포트
 ============================================================
 
-분석 일시: 2025-06-01 23:54:06
+분석 일시: 2025-06-02 17:47:52
 
 데이터셋 요약:
-              Dataset    Rows  Columns Memory_MB
-      ev_registration     306       17      0.15
-    charging_stations 975,937       21   1019.73
-      charging_hourly  33,670        5      7.95
-commercial_facilities 540,517       41    947.75
-          grid_system   5,963       10      0.74
+              Dataset    Rows  Columns Memory_MB Missing_Rate
+      ev_registration     306       17      0.15         7.0%
+    charging_stations 975,937       21   1019.73         3.1%
+      charging_hourly  33,670        5      7.95         0.0%
+commercial_facilities 540,517       41    947.75        11.6%
+          grid_system   5,963       10      0.74         0.0%
 
 주요 발견사항:
+• 수요가 있는 격자: 1,999개
+• 공급이 있는 격자: 5,963개

@@ -1,11 +1,11 @@
 data/raw/*.csv
 data/raw/*.xls
 data/raw/*.xlsx
-data/processed/*.csv*
-data/processed/*.json*
+data/processed/charging_stations_processed.csv
+data/processed/commercial_facilities_processed.csv
 *.pyc
 __pycache__/
 .jupyter/
 .ipynb_checkpoints/
-outputs/plots/*.png
-outputs/maps/*.html
+# outputs/plots/*.png
+# outputs/maps/*.html
