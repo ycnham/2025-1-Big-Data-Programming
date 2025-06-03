@@ -32,10 +32,15 @@ def evaluate_existing_stations(
         dists = ((features['center_lat'] - lat) ** 2 + (features['center_lon'] - lon) ** 2)
         return features.loc[dists.idxmin(), 'grid_id']
 
+    # 좌표 결측 제거
+    station_df = station_df.dropna(subset=[lat_col, lon_col]).copy()
+
+    # grid_id 매핑
     station_df['grid_id'] = station_df.apply(
         lambda row: find_nearest_grid(row[lat_col], row[lon_col]),
         axis=1
     )
+
 
     # 중복된 grid_id 제거 후 coverage 계산
     station_grids = station_df['grid_id'].unique()
