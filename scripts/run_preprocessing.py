@@ -4,6 +4,8 @@
 
 import sys
 import os
+from pathlib import Path
+import pandas as pd
 
 # 프로젝트 루트 디렉토리를 Python 경로에 추가
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -146,6 +148,15 @@ def safe_import():
         print(f"❌ data_validation 모듈 import 실패: {e}")
         modules['data_validation'] = False
     
+    try:
+        # 7. 모델링 전처리 모듈 (새로 추가)
+        from src.preprocessing.modeling_data_prep import prepare_modeling_data
+        modules['modeling_prep'] = True
+        print("✅ modeling_prep 모듈 import 성공")
+    except ImportError as e:
+        print(f"❌ modeling_prep 모듈 import 실패: {e}")
+        modules['modeling_prep'] = False
+    
     return modules
 
 def run_setup_phase():
@@ -242,10 +253,81 @@ def run_geographic_phase():
         print(f"❌ 지리적 분석 실패: {e}")
         return False
 
-def run_validation_phase():
-    """6단계: 데이터 검증"""
+def run_modeling_prep_phase():
+    """6단계: 모델링 데이터 전처리 (새로 추가)"""
     print("\n" + "="*50)
-    print("6️⃣ 데이터 검증 단계")
+    print("6️⃣ 모델링 데이터 전처리 단계")
+    print("="*50)
+    
+    try:
+        print("📊 모델링용 데이터 준비 중...")
+        
+        # 모델링 전처리 모듈 import
+        from src.preprocessing.modeling_data_prep import prepare_modeling_data
+        
+        print("✅ 모델링 전처리 모듈 import 성공")
+        
+        # 모델링 전처리 실행
+        prepare_modeling_data()
+        
+        print("✅ 모델링 데이터 전처리 완료")
+        
+        # 생성된 파일 확인
+        print("\n📋 모델링 파일 생성 확인:")
+        processed_dir = Path(project_root) / 'data' / 'processed'
+        modeling_files = [
+            'grid_features.csv',
+            'demand_supply_analysis.csv',
+            'optimal_locations.csv'
+        ]
+        
+        modeling_success = True
+        for file in modeling_files:
+            file_path = processed_dir / file
+            if file_path.exists():
+                try:
+                    df = pd.read_csv(file_path)
+                    print(f"✅ {file}: {len(df):,}행, {len(df.columns)}컬럼")
+                    
+                    # 각 파일별 간단한 요약 정보
+                    if file == 'grid_features.csv':
+                        print(f"   💡 격자 특성 데이터: 수요/공급/상업시설 정보")
+                    elif file == 'demand_supply_analysis.csv':
+                        print(f"   💡 수요-공급 분석 데이터: 불균형 지역 식별")
+                    elif file == 'optimal_locations.csv':
+                        print(f"   💡 최적 위치 데이터: 상위 충전소 설치 후보지")
+                        
+                except Exception as e:
+                    print(f"⚠️ {file}: 파일 읽기 오류 - {e}")
+                    modeling_success = False
+            else:
+                print(f"❌ {file}: 생성되지 않음")
+                modeling_success = False
+        
+        if modeling_success:
+            print("\n🎉 모든 모델링 데이터 준비 완료!")
+            print("💡 다음 단계: 머신러닝 모델 학습 및 예측")
+            return True
+        else:
+            print("\n⚠️ 일부 모델링 파일 생성에 문제가 있습니다.")
+            return False
+            
+    except ImportError as e:
+        print(f"❌ 모델링 전처리 모듈 import 실패: {e}")
+        print("💡 modeling_data_prep.py 파일이 src/preprocessing/ 폴더에 있는지 확인하세요.")
+        return False
+        
+    except Exception as e:
+        print(f"❌ 모델링 전처리 실패: {e}")
+        print("상세 오류:")
+        import traceback
+        print(traceback.format_exc())
+        return False
+
+def run_validation_phase():
+    """7단계: 데이터 검증"""
+    print("\n" + "="*50)
+    print("7️⃣ 데이터 검증 단계")
     print("="*50)
     
     try:
@@ -260,7 +342,7 @@ def run_validation_phase():
 def main():
     """전체 프로세스 실행"""
     print("🚀 전기차 충전소 최적 위치 선정 프로젝트 시작!")
-    print("📋 실행 순서: 환경설정 → 데이터로딩 → 전처리 → EDA → 지리적분석 → 검증")
+    print("📋 실행 순서: 환경설정 → 데이터로딩 → 전처리 → EDA → 지리적분석 → 모델링전처리 → 검증")
     print("="*60)
     
     # 모듈 import 상태 확인
@@ -278,31 +360,34 @@ def main():
     
     # 1. 환경 설정
     if modules_status.get('setup', False):
-        results['setup'] = run_setup_phase()
+        results['setup'] = '✅ 성공' if run_setup_phase() else '❌ 실패'
     else:
         print("\n⚠️ 환경 설정 모듈이 없어 건너뜁니다.")
-        results['setup'] = False
+        results['setup'] = '⚠️ 건너뜀'
     
     # 2. 데이터 로딩
     if modules_status.get('data_loader', False):
-        results['data_loading'] = run_data_loading_phase()
+        data_result = run_data_loading_phase()
+        results['data_loading'] = '✅ 성공' if data_result else '❌ 실패'
     else:
         print("\n⚠️ 데이터 로더 모듈이 없어 건너뜁니다.")
-        results['data_loading'] = None
+        results['data_loading'] = '⚠️ 건너뜀'
     
     # 3. 데이터 전처리
     if modules_status.get('data_cleaner', False):
-        results['preprocessing'] = run_preprocessing_phase()
+        preprocessing_result = run_preprocessing_phase()
+        results['preprocessing'] = '✅ 성공' if preprocessing_result else '❌ 실패'
     else:
         print("\n⚠️ 데이터 전처리 모듈이 없어 건너뜁니다.")
-        results['preprocessing'] = None
+        results['preprocessing'] = '⚠️ 건너뜀'
     
     # 4. 탐색적 데이터 분석
     if modules_status.get('eda', False):
         print("\n🔄 전처리 완료! 이제 EDA를 자동으로 실행합니다...")
-        results['eda'] = run_eda_phase()
+        eda_result = run_eda_phase()
+        results['eda'] = '✅ 성공' if eda_result else '❌ 실패'
         
-        if results['eda']:
+        if eda_result:
             print("\n🎯 EDA 결과 확인:")
             print("   📂 EDA 결과: outputs/eda/")
             print("   📊 시각화 차트: outputs/eda/*.png")
@@ -311,59 +396,86 @@ def main():
         print("\n⚠️ EDA 모듈이 없어 건너뜁니다.")
         print("💡 EDA를 수동으로 실행하려면:")
         print("   python -c \"from src.analysis.eda import EDAAnalyzer; EDAAnalyzer().run_comprehensive_eda()\"")
-        results['eda'] = False
+        results['eda'] = '⚠️ 건너뜀'
     
     # 5. 지리적 분석
     if modules_status.get('geographic_viz', False):
-        results['geographic'] = run_geographic_phase()
+        geographic_result = run_geographic_phase()
+        results['geographic'] = '✅ 성공' if geographic_result else '❌ 실패'
     else:
         print("\n⚠️ 지리적 분석 모듈이 없어 건너뜁니다.")
-        results['geographic'] = False
+        results['geographic'] = '⚠️ 건너뜀'
     
-    # 6. 데이터 검증
-    if modules_status.get('data_validation', False):
-        results['validation'] = run_validation_phase()
+    # 6. 모델링 데이터 전처리 (새로 추가)
+    if modules_status.get('modeling_prep', False):
+        modeling_result = run_modeling_prep_phase()
+        results['modeling_prep'] = '✅ 성공' if modeling_result else '❌ 실패'
     else:
-        print("\n⚠️ 데이터 검증 모듈이 없어 건너뜁니다.")
-        results['validation'] = False
+        print("\n⚠️ 모델링 전처리 모듈이 없어 건너뜁니다.")
+        print("💡 모델링 전처리를 별도로 실행하려면:")
+        print("   python run_modeling_prep.py")
+        results['modeling_prep'] = '⚠️ 건너뜀'
     
-    # 결과 요약
+    # 7. 데이터 검증
+    if modules_status.get('data_validation', False):
+        validation_result = run_validation_phase()
+        results['validation'] = '✅ 성공' if validation_result else '❌ 실패'
+    else:
+        print("\n⚠️ 데이터 검증 모듈이 없어 건너뜀니다.")
+        results['validation'] = '⚠️ 건너뜀'
+    
+    # 실행 결과 요약 (개선된 버전)
     print("\n" + "="*60)
     print("📋 실행 결과 요약")
     print("="*60)
     
-    success_count = 0
-    total_count = 0
+    total_steps = len(results)
+    success_count = sum(1 for status in results.values() if '✅' in status)
     
-    for phase, result in results.items():
-        total_count += 1
-        if result:
-            success_count += 1
-            status = "✅ 성공"
-        else:
-            status = "❌ 실패 또는 건너뜀"
-        
-        print(f"{phase}: {status}")
+    for step, status in results.items():
+        print(f"{step}: {status}")
     
-    print(f"\n📊 성공률: {success_count}/{total_count} ({success_count/total_count*100:.1f}%)")
+    print(f"\n📊 성공률: {success_count}/{total_steps} ({success_count/total_steps*100:.1f}%)")
     
-    if success_count == total_count:
-        print("\n🎉 모든 프로세스가 성공적으로 완료되었습니다!")
-        print("\n📂 결과 확인:")
+    if success_count == total_steps:
+        print("\n🎉 모든 전처리 단계가 성공적으로 완료되었습니다!")
+        print("💡 다음 단계: EDA 분석 결과 확인 및 모델링 진행")
+        print("\n📂 생성된 결과물:")
         print("   • 전처리된 데이터: data/processed/")
         print("   • EDA 결과: outputs/eda/")
-        print("   • 시각화 차트: outputs/eda/*.png")
+        print("   • 모델링 데이터: data/processed/grid_features.csv")
+        print("   • 최적 위치: data/processed/optimal_locations.csv")
         
-    elif results.get('eda', False):
-        print(f"\n✅ 핵심 프로세스 (전처리 + EDA)가 완료되었습니다!")
-        print("📊 EDA 결과 확인:")
-        print("   • EDA 차트: outputs/eda/charging_by_province.png")
-        print("   • EDA 차트: outputs/eda/charging_type_distribution.png") 
-        print("   • EDA 리포트: outputs/eda/eda_insights.txt")
-
+    elif success_count >= total_steps * 0.8:  # 80% 이상 성공
+        print("\n✅ 대부분의 전처리가 완료되었습니다.")
+        print("⚠️ 일부 문제가 있는 단계를 점검해주세요.")
+        
+        # 성공한 핵심 단계들 강조
+        if results.get('preprocessing') == '✅ 성공':
+            print("   ✅ 핵심 전처리 완료")
+        if results.get('modeling_prep') == '✅ 성공':
+            print("   ✅ 모델링 데이터 준비 완료")
     else:
-        print(f"\n⚠️ 일부 프로세스에서 문제가 발생했습니다.")
+        print("\n⚠️ 일부 프로세스에서 문제가 발생했습니다.")
         print("개별 모듈을 직접 실행해보시기 바랍니다.")
+        
+        # 실패한 단계별 가이드 제공
+        failed_steps = [step for step, status in results.items() if '❌' in status]
+        if failed_steps:
+            print("\n🔧 실패한 단계별 해결 가이드:")
+            for step in failed_steps:
+                if step == 'eda':
+                    print("   • EDA: python -c \"from src.analysis.eda import EDAAnalyzer; EDAAnalyzer().run_comprehensive_eda()\"")
+                elif step == 'modeling_prep':
+                    print("   • 모델링 전처리: python run_modeling_prep.py")
+                elif step == 'preprocessing':
+                    print("   • 데이터 전처리: 개별 데이터셋 확인 필요")
+                elif step == 'geographic':
+                    print("   • 지리적 분석: geographic_viz 모듈 확인 필요")
+    
+    processed_dir = Path(project_root) / 'data' / 'processed'
+    print(f"\n📁 처리된 데이터 위치: {processed_dir}")
+    print("🔍 로그 및 결과물을 확인하여 다음 단계를 진행하세요.")
 
 def check_project_structure():
     """프로젝트 구조 확인"""
@@ -438,6 +550,19 @@ def run_preprocessing_only():
         return result
     except Exception as e:
         print(f"❌ 전처리 실패: {e}")
+        return None
+
+def run_modeling_only():
+    """모델링 전처리만 실행하는 함수"""
+    print("🔧 모델링 전처리만 실행합니다...")
+    
+    try:
+        from src.preprocessing.modeling_data_prep import prepare_modeling_data
+        result = prepare_modeling_data()
+        print("✅ 모델링 전처리 완료!")
+        return result
+    except Exception as e:
+        print(f"❌ 모델링 전처리 실패: {e}")
         return None
     
 if __name__ == "__main__":

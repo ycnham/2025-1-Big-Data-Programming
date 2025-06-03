@@ -1,0 +1,177 @@
+{
+  "quality_score": 95,
+  "grade": "A (우수)",
+  "total_datasets": 5,
+  "issues_count": 1,
+  "issues": [
+    "charging_stations: 중복 데이터 발견"
+  ],
+  "recommendations": [
+    "이상치 데이터 재검토 및 수정",
+    "좌표 데이터 정확성 확인",
+    "중복 데이터 제거",
+    "결측값 처리 개선"
+  ],
+  "validation_results": {
+    "ev_registration": {
+      "rows": 16,
+      "columns": 3,
+      "missing_values": 0,
+      "duplicate_rows": 0,
+      "data_types": {
+        "시군구": "object",
+        "읍면동": "object",
+        "전기차_수": "int64"
+      },
+      "memory_usage": 2894.0,
+      "region_columns": [
+        "시군구",
+        "읍면동"
+      ],
+      "unique_regions": 16,
+      "ev_columns": [
+        "전기차_수"
+      ]
+    },
+    "charging_stations": {
+      "rows": 975937,
+      "columns": 21,
+      "missing_values": 0,
+      "duplicate_rows": 5,
+      "data_types": {
+        "시도": "object",
+        "시군구": "object",
+        "본부": "object",
+        "사업소": "object",
+        "충전소ID": "int64",
+        "충전소명": "object",
+        "주소": "object",
+        "충전기ID": "int64",
+        "충전기명": "object",
+        "용도": "object",
+        "충전기용량": "float64",
+        "충전방식": "object",
+        "충전기구분": "object",
+        "충전량": "float64",
+        "충전시간": "int64",
+        "충전분": "int64",
+        "충전종료일": "object",
+        "충전시작시각": "object",
+        "충전종료시각": "object",
+        "충전구분": "object",
+        "충전량_numeric": "float64"
+      },
+      "memory_usage": 1277184898.0,
+      "negative_charging": 0,
+      "zero_charging": 22,
+      "avg_charging": 26.09857036878405,
+      "max_charging": 955.99,
+      "unique_stations": 4531,
+      "seoul_charging_records": 112452
+    },
+    "charging_hourly": {
+      "rows": 33670,
+      "columns": 5,
+      "missing_values": 0,
+      "duplicate_rows": 0,
+      "data_types": {
+        "순번": "int64",
+        "충전소명": "object",
+        "충전시작시간": "object",
+        "충전종료시간": "object",
+        "충전량(kW)": "float64"
+      },
+      "memory_usage": 9677500.0
+    },
+    "commercial_facilities": {
+      "rows": 540517,
+      "columns": 39,
+      "missing_values": 0,
+      "duplicate_rows": 0,
+      "data_types": {
+        "상가업소번호": "object",
+        "상호명": "object",
+        "지점명": "object",
+        "상권업종대분류코드": "object",
+        "상권업종대분류명": "object",
+        "상권업종중분류코드": "object",
+        "상권업종중분류명": "object",
+        "상권업종소분류코드": "object",
+        "상권업종소분류명": "object",
+        "표준산업분류코드": "object",
+        "표준산업분류명": "object",
+        "시도코드": "int64",
+        "시도명": "object",
+        "시군구코드": "int64",
+        "시군구명": "object",
+        "행정동코드": "int64",
+        "행정동명": "object",
+        "법정동코드": "int64",
+        "법정동명": "object",
+        "지번코드": "int64",
+        "대지구분코드": "int64",
+        "대지구분명": "object",
+        "지번본번지": "float64",
+        "지번부번지": "float64",
+        "지번주소": "object",
+        "도로명코드": "int64",
+        "도로명": "object",
+        "건물본번지": "float64",
+        "건물부번지": "float64",
+        "건물관리번호": "object",
+        "건물명": "object",
+        "도로명주소": "object",
+        "구우편번호": "int64",
+        "신우편번호": "int64",
+        "층정보": "object",
+        "경도": "float64",
+        "위도": "float64",
+        "업종_대분류": "object",
+        "업종_중분류": "object"
+      },
+      "memory_usage": 1201928014.0,
+      "valid_coordinates": 540517,
+      "invalid_coordinates": 0,
+      "coord_validation_rate": 100.0,
+      "top_business_types": {
+        "음식": 139929,
+        "소매": 113485,
+        "과학·기술": 94149,
+        "수리·개인": 50986,
+        "교육": 44627
+      },
+      "unique_business_types": 10
+    },
+    "grid_system": {
+      "rows": 6030,
+      "columns": 9,
+      "missing_values": 0,
+      "duplicate_rows": 0,
+      "data_types": {
+        "grid_id": "object",
+        "min_lat": "float64",
+        "max_lat": "float64",
+        "min_lon": "float64",
+        "max_lon": "float64",
+        "center_lat": "float64",
+        "center_lon": "float64",
+        "demand_score": "float64",
+        "supply_score": "float64"
+      },
+      "memory_usage": 753882.0,
+      "avg_grid_lat_size": 0.0045000000000001705,
+      "avg_grid_lon_size": 0.0056000000000013175,
+      "grids_with_demand": 2029,
+      "grids_with_supply": 6030,
+      "avg_demand_score": 171.0464344941957,
+      "avg_supply_score": 119.08517567164179,
+      "max_demand_score": 4967.0,
+      "max_supply_score": 433.93164
+    }
+  },
+  "summary": {
+    "total_rows": 1556170,
+    "total_missing_values": 0,
+    "total_duplicates": 5
+  }
+}

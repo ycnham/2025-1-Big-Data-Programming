@@ -1,0 +1,6 @@
+﻿Dataset,Rows,Columns,Memory_MB,Missing_Count,Missing_Rate
+ev_registration,16,3,0.00,0,0.0%
+charging_stations,"975,937",21,1042.76,0,0.0%
+charging_hourly,"33,670",5,7.95,0,0.0%
+commercial_facilities,"540,517",39,976.41,0,0.0%
+grid_system,"6,030",9,0.72,0,0.0%
