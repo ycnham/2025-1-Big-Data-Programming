@@ -65,7 +65,7 @@ def train_and_predict(
     # 중요도 시각화
     if verbose:
         xgb.plot_importance(model, max_num_features=10)
-        plt.title("🔍 Feature Importance")
+        plt.title("Feature Importance")
         plt.tight_layout()
         plt.show()
 

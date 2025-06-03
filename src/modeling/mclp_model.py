@@ -27,7 +27,8 @@ def solve_mclp(
     df = df.copy()
     df['demand'] = df[demand_column]
 
-    coords = df[['center_lat', 'center_lon']].values
+    coords = df[['center_lat', 'center_lon']].values.tolist()
+
     sites = list(df.index)
     demand_points = list(df.index)
 
