@@ -66,4 +66,39 @@ def visualize_cluster_map(
     seoul_map.save(output_path)
 
     if verbose:
-        print(f"✅ 클러스터 지도 저장 완료: {output_path}")
+        print(f"클러스터 지도 저장 완료: {output_path}")
+
+def visualize_selected_sites_map(
+    features_path: str,
+    output_path: str = "../outputs/maps/mclp_selected_sites.html",
+    map_center: tuple = (37.5665, 126.9780),
+    zoom_start: int = 11,
+    verbose: bool = True
+):
+    """
+    MCLP 결과 기반 설치 여부 시각화 (selected == 1)
+    """
+    import folium
+    import pandas as pd
+    import os
+
+    df = pd.read_csv(features_path)
+
+    # 지도 생성
+    seoul_map = folium.Map(location=map_center, zoom_start=zoom_start)
+
+    for _, row in df.iterrows():
+        color = 'red' if row.get('selected', 0) == 1 else 'gray'
+        folium.CircleMarker(
+            location=[row["center_lat"], row["center_lon"]],
+            radius=3,
+            color=color,
+            fill=True,
+            fill_opacity=0.8 if color == 'red' else 0.2
+        ).add_to(seoul_map)
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    seoul_map.save(output_path)
+
+    if verbose:
+        print(f"설치지 시각화 저장 완료: {output_path}")
