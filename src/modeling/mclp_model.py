@@ -30,7 +30,7 @@ def solve_mclp(
     # 1. 커버리지 행렬 생성
     # ===============================
     coverage_matrix = {}
-    for i, (lat_i, lon_i) in tqdm(enumerate(coords), total=len(coords), desc="커버리지 행렬 생성"):
+    for i, (lat_i, lon_i) in tqdm(enumerate(coords), total=len(coords), desc="\n커버리지 행렬 생성"):
         covered = []
         for j, (lat_j, lon_j) in enumerate(coords):
             distance_km = geodesic((lat_i, lon_i), (lat_j, lon_j)).km
@@ -181,3 +181,32 @@ def run_sensitivity_analysis(
         plt.show()
 
     return result_df
+
+def find_elbow_point(sensitivity_df: pd.DataFrame, threshold_ratio: float = 0.6) -> pd.DataFrame:
+    """
+    delta 기반 elbow 지점 탐색 함수
+
+    Parameters:
+    - sensitivity_df: 민감도 분석 결과 DataFrame
+    - threshold_ratio: 최대 증가율 대비 허용 임계 비율 (기본: 0.6)
+
+    Returns:
+    - elbow_candidates: 꺾이는 지점 후보 DataFrame (비어있을 수 있음)
+    """
+    df = sensitivity_df.copy()
+    df['delta_demand'] = df['covered_demand'].diff()
+    df['delta_ratio'] = df['delta_demand'] / df['facility_limit'].diff()
+
+    max_delta_ratio = df['delta_ratio'].max()
+    threshold = max_delta_ratio * threshold_ratio
+
+    elbow_candidates = df[df['delta_ratio'] < threshold]
+
+    return elbow_candidates
+
+def print_elbow_summary(best_row: dict, elbow_row: dict):
+    print("\n민감도 분석 결과 요약")
+    print(f" - 최적 설치 수 기준 (best_limit): {int(best_row['facility_limit'])}개")
+    print(f"   → 커버 수요: {best_row['covered_demand']:.2f}, 커버율: {best_row['coverage_rate']:.2f}%")
+    print(f" - 꺾이는 지점 기준 (elbow_point): {int(elbow_row['facility_limit'])}개")
+    print(f"   → 커버 수요: {elbow_row['covered_demand']:.2f}, 커버율: {elbow_row['coverage_rate']:.2f}%")
