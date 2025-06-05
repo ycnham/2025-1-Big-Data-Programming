@@ -164,3 +164,11 @@ def evaluate_mclp_result(
         'selected': selected_count,
         'total_demand': total_demand
     }
+    
+def select_top_demand_features(
+    df: pd.DataFrame,
+    demand_column: str = 'predicted_demand_score',
+    percentile: float = 0.8  # 상위 20%
+) -> pd.DataFrame:
+    threshold = df[demand_column].quantile(percentile)
+    return df[df[demand_column] >= threshold].copy()

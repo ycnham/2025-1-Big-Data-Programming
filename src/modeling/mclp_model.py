@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum, LpStatus
 from geopy.distance import geodesic
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 from pulp import PULP_CBC_CMD
 
 def solve_mclp(

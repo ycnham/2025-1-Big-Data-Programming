@@ -12,3 +12,7 @@ outputs/plots/*.png
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+.env
+.venv
+env/
+venv
