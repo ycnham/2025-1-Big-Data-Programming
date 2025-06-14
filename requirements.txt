@@ -1,0 +1,28 @@
+# Python 패키지 의존성
+
+# 데이터 처리
+pandas>=1.5.0
+numpy>=1.24.0
+
+# 지리 데이터 처리
+geopandas>=0.13.0
+
+# 시각화
+matplotlib>=3.7.0
+seaborn>=0.12.0
+folium>=0.14.0
+plotly>=5.15.0
+
+# 머신러닝
+scikit-learn>=1.3.0
+xgboost>=1.7.0
+
+# 최적화
+pulp>=2.7.0
+
+# 웹 앱 (나중에 사용)
+streamlit>=1.25.0
+
+# 데이터 파일 처리
+openpyxl>=3.1.0
+xlrd>=2.0.0
