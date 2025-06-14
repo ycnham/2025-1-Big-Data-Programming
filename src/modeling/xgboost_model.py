@@ -47,9 +47,15 @@ def train_and_predict(
     model = XGBRegressor(
         n_estimators=n_estimators,
         random_state=random_state,
-        enable_categorical=True
+        enable_categorical=True,
+        eval_metric="rmse",
+        early_stopping_rounds=10  # 추가 가능
     )
-    model.fit(X_train, y_train)
+    model.fit(
+        X_train, y_train,
+        eval_set=[(X_test, y_test)],
+        verbose=False
+    )
 
     # 성능 평가
     y_pred = model.predict(X_test)

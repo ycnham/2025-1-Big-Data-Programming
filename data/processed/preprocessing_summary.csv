@@ -1,6 +1,0 @@
-﻿dataset,rows,columns,missing_count,missing_rate,file_saved
-ev_registration,16,3,0,0.0%,ev_registration_processed.csv
-charging_stations,975937,21,0,0.0%,charging_stations_processed.csv
-charging_hourly,33670,5,0,0.0%,charging_hourly_processed.csv
-commercial_facilities,540517,39,0,0.0%,commercial_facilities_processed.csv
-grid_system,6030,9,0,0.0%,grid_system_processed.csv

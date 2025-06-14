@@ -7,7 +7,7 @@ from pulp import PULP_CBC_CMD
 
 def solve_mclp(
     df: pd.DataFrame,
-    coverage_radius: float = 0.02,  # (위도/경도 degree 단위 ≒ 약 2.2km)
+    coverage_radius: float = 0.55,  # 단위: km
     facility_limit: int = 30,
     demand_column: str = 'predicted_demand_score',
     verbose: bool = True
@@ -30,11 +30,11 @@ def solve_mclp(
     # 1. 커버리지 행렬 생성
     # ===============================
     coverage_matrix = {}
-    for i, (lat_i, lon_i) in tqdm(enumerate(coords), total=len(coords), desc="\n커버리지 행렬 생성"):
+    for i, (lat_i, lon_i) in enumerate(coords):
         covered = []
         for j, (lat_j, lon_j) in enumerate(coords):
             distance_km = geodesic((lat_i, lon_i), (lat_j, lon_j)).km
-            if distance_km <= coverage_radius * 111.0:  # degree → km 환산
+            if distance_km <= coverage_radius:
                 covered.append(j)
         if covered:
             coverage_matrix[i] = covered
@@ -148,7 +148,7 @@ def run_sensitivity_analysis(
                 coverage_radius=r_km / 111.0,  # degree → km 환산
                 facility_limit=p,
                 demand_column=demand_column,
-                verbose=False
+                verbose=verbose
             )
 
             results.append({
@@ -210,3 +210,46 @@ def print_elbow_summary(best_row: dict, elbow_row: dict):
     print(f"   → 커버 수요: {best_row['covered_demand']:.2f}, 커버율: {best_row['coverage_rate']:.2f}%")
     print(f" - 꺾이는 지점 기준 (elbow_point): {int(elbow_row['facility_limit'])}개")
     print(f"   → 커버 수요: {elbow_row['covered_demand']:.2f}, 커버율: {elbow_row['coverage_rate']:.2f}%")
+
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+def run_single_mclp(args):
+    df, r_km, p, demand_column = args
+    result_df, summary, _ = solve_mclp(
+        df.copy(),
+        coverage_radius=r_km / 111.0,
+        facility_limit=p,
+        demand_column=demand_column,
+        verbose=False
+    )
+    return {
+        'coverage_radius_km': r_km,
+        'facility_limit': p,
+        'covered_demand': round(summary['covered_demand'], 2),
+        'total_demand': round(df[demand_column].sum(), 2),
+        'coverage_rate': round(summary['coverage_rate'], 2),
+        'demand_satisfaction_ratio': round(summary['covered_demand'] / p, 2),
+    }
+
+def run_sensitivity_analysis_parallel(
+    df: pd.DataFrame,
+    coverage_radii_km: list,
+    facility_limits: list,
+    demand_column: str = 'predicted_demand_score',
+    max_workers: int = 4
+) -> pd.DataFrame:
+    tasks = [
+        (df, r_km, p, demand_column)
+        for r_km in coverage_radii_km
+        for p in facility_limits
+    ]
+
+    results = []
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(run_single_mclp, args) for args in tasks]
+        for i, future in enumerate(as_completed(futures), 1):
+            result = future.result()
+            print(f"[{i}/{len(tasks)} 완료] 반경 {result['coverage_radius_km']}km, 설치 {result['facility_limit']}개")
+            results.append(result)
+
+    return pd.DataFrame(results)
