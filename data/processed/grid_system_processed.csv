@@ -1,4 +1,4 @@
-﻿grid_id,min_lat,max_lat,min_lon,max_lon,center_lat,center_lon,demand_score,supply_score
+grid_id,min_lat,max_lat,min_lon,max_lon,center_lat,center_lon,demand_score,supply_score
 GRID_000_000,37.4,37.4045,126.7,126.7056,37.402249999999995,126.7028,0.0,129.23721
 GRID_000_001,37.4,37.4045,126.7056,126.7112,37.402249999999995,126.7084,0.0,129.23721
 GRID_000_002,37.4,37.4045,126.7112,126.7168,37.402249999999995,126.714,0.0,129.23721
