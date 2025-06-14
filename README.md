@@ -35,15 +35,14 @@
 │
 ├── scripts/
 │   ├── run_preprocessing.py     # 전처리 실행 스크립트
-│   ├── main.ipynb               # 해결 프로세스 합치 노트북
-│   └── modeling_1~5.ipynb       # 실험 방향 노트북 (계획 외 참고)
+│   └── main.ipynb               # 해결 프로세스 합치 노트북
 │
 ├── src/
 │   ├── preprocessing/           # 전처리 모듈
 │   ├── analysis/                # 수요 예측 및 클러스터링
 │   ├── modeling/                # MCLP 모델 명세
 │   ├── utils/                   # 자동화 등 특수 기능
-│   └── visualization/           # 지도 시각화
+│   └── visualization/           # 시각화
 └── 
 ```
 
