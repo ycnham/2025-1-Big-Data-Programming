@@ -57,15 +57,6 @@ cd scripts
 jupyter notebook                       # 개별 분석 노트북 실행
 ```
 
-### 5. 결과 확인
-```bash
-# 생성된 결과 파일 확인
-ls data/processed/        # 전처리 결과
-ls data/modeling/         # 모델링 결과  
-ls outputs/maps/          # 지도 시각화
-ls outputs/plots/         # 그래프 결과
-```
-
 ## 📁 필수 생성 폴더
 
 ```
