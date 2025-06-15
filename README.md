@@ -16,6 +16,168 @@
 
 ---
 
+## 실행 순서 (Quick Start)
+
+### 1. 환경 설정 및 클론
+```bash
+# 1. 프로젝트 클론
+git clone https://github.com/ycnham/2025-1-Big-Data-Programming.git
+cd 2025-1-Big-Data-Programming
+
+# 2. 가상환경 생성
+conda create -n bigdata python=3.12
+conda activate bigdata
+
+# 3. 필요 패키지 설치
+pip install -r requirements.txt
+```
+
+### 2. 프로젝트 폴더 구조 생성
+```bash
+# 자동 생성 스크립트 실행
+python scripts/setup_directories.py
+
+# 또는 수동 생성
+mkdir -p data/raw data/processed data/modeling outputs/eda outputs/plots outputs/maps
+```
+
+### 3. 원본 데이터 파일 배치
+**[📁 Raw 데이터 파일 위치](#-raw-데이터-파일-위치-data-raw) 섹션을 참고하여 필요한 데이터 파일들을 `data/raw/` 폴더에 배치**
+
+### 4. 전체 파이프라인 실행
+```bash
+# 방법 1: 통합 노트북 실행
+cd scripts
+jupyter notebook main.ipynb
+# → 셀을 순서대로 실행하면 전체 분석 완료
+
+# 방법 2: 개별 스크립트 실행
+python scripts/run_preprocessing.py    # 전처리 실행
+cd scripts
+jupyter notebook                       # 개별 분석 노트북 실행
+```
+
+### 5. 결과 확인
+```bash
+# 생성된 결과 파일 확인
+ls data/processed/        # 전처리 결과
+ls data/modeling/         # 모델링 결과  
+ls outputs/maps/          # 지도 시각화
+ls outputs/plots/         # 그래프 결과
+```
+
+## 📁 필수 생성 폴더
+
+```
+2025-1-Big-Data-Programming/
+├── README.md
+├── requirements.txt
+│
+├── data/
+│   ├── raw/                     # 원본 데이터 파일 위치 (사용자가 직접 배치)
+│   ├── processed/               # 전처리 완료 데이터 (자동 생성)
+│   └── modeling/                # 모델링용 파생 데이터 (자동 생성)
+│
+├── outputs/
+│   ├── eda/                     # 탐색적 데이터 분석 결과 (자동 생성)
+│   ├── plots/                   # 시각화 결과 (자동 생성)
+│   └── maps/                    # MCLP 결과 지도 (자동 생성)
+│
+├── scripts/
+│   ├── run_preprocessing.py     # 전처리 실행 스크립트
+│   ├── main.ipynb               # 메인 실행 노트북
+│   └── setup_directories.py    # 폴더 구조 자동 생성 스크립트
+│
+├── src/
+│   ├── preprocessing/           # 전처리 모듈
+│   ├── analysis/                # 수요 예측 및 클러스터링
+│   ├── modeling/                # MCLP 모델 명세
+│   ├── utils/                   # 자동화 등 특수 기능
+│   └── visualization/           # 시각화
+└── 
+```
+
+### 폴더 자동 생성 스크립트
+
+다음 스크립트를 `scripts/setup_directories.py`로 저장 & 실행
+
+```python
+import os
+from pathlib import Path
+
+def create_project_directories():
+    """프로젝트 필수 폴더들을 자동 생성합니다."""
+    
+    # 필수 폴더 목록
+    directories = [
+        "data/raw",              # 원본 데이터
+        "data/processed",        # 전처리 결과
+        "data/modeling",         # 모델링 데이터
+        "outputs/eda",           # EDA 결과
+        "outputs/plots",         # 시각화 결과
+        "outputs/maps",          # 지도 파일
+        "scripts",               # 실행 스크립트
+        "src/preprocessing",     # 전처리 모듈
+        "src/analysis",          # 분석 모듈
+        "src/modeling",          # 모델링 모듈
+        "src/utils",             # 유틸리티
+        "src/visualization"      # 시각화 모듈
+    ]
+    
+    project_root = Path.cwd()
+    
+    print("🔧 프로젝트 폴더 구조 생성 중...")
+    
+    for directory in directories:
+        dir_path = project_root / directory
+        dir_path.mkdir(parents=True, exist_ok=True)
+        print(f"    {directory}")
+    
+    print(f"\n 총 {len(directories)}개 폴더 생성 완료!")
+    print("\n 다음 단계:")
+    print("   1. data/raw/ 폴더에 원본 데이터 파일 배치")
+    print("   2. scripts/main.ipynb 실행")
+
+if __name__ == "__main__":
+    create_project_directories()
+```
+
+---
+
+## 📄 Raw 데이터 파일 위치 (data/raw/)
+
+다음 **10개 원본 데이터 파일**을 `data/raw/` 폴더에 **정확한 파일명**으로 배치해야 합니다:
+
+### ⭐ 필수 데이터 파일 목록
+
+```
+📁 data/raw/
+├── (참고자료) 한국전력공사_전기차충전서비스운영시스템_고객센터 상담내역_코드표.xlsx
+├── 서울시 소유 충전기 일별 시간별 충전현황.xlsx
+├── 서울시 자치구 읍면동별 연료별 자동차 등록현황(행정동)(25년04월).xls
+├── 소상공인시장진흥공단_상가(상권)정보_서울_202503.csv
+├── 월별 소통정보 (구간별-첨두시별).csv
+├── 전기차 충전소 충전량 데이터_202501.xlsx
+├── 전기차 충전소 충전량 데이터_202502.xlsx  
+├── 전기차 충전소 충전량 데이터_202503.xlsx
+├── 한국전력공사_전기차충전서비스운영시스템_고객센터 상담 내역_20241231.csv
+└── 한국환경공단_전기차 충전소 위치 및 운영정보(충전소 ID 포함)_20230531.csv
+```
+###  데이터셋 설명
+
+| 파일명 | 용도 | 중요도 |
+|--------|------|------|--------|
+| `(참고자료) 한국전력공사_전기차충전서비스운영시스템_고객센터 상담내역_코드표.xlsx` | 고객 상담 분석 |
+| `서울시 소유 충전기 일별 시간별 충전현황.xlsx` | 시간대별 충전 패턴 분석 |
+| `서울시 자치구 읍면동별 연료별 자동차 등록현황(행정동)(25년04월).xls` | 전기차 등록 현황 |
+| `소상공인시장진흥공단_상가(상권)정보_서울_202503.csv` | 상업지역 밀집도 분석 |
+| `월별 소통정보 (구간별-첨두시별).csv` | 교통 패턴 분석 |
+| `전기차 충전소 충전량 데이터_202501.xlsx` | 실제 충전량 기반 수요 계산 |
+| `전기차 충전소 충전량 데이터_202502.xlsx` | 실제 충전량 기반 수요 계산 |
+| `전기차 충전소 충전량 데이터_202503.xlsx` | 실제 충전량 기반 수요 계산 |
+| `한국전력공사_전기차충전서비스운영시스템_고객센터 상담 내역_20241231.csv` | 고객 상담 분석 |
+| `한국환경공단_전기차 충전소 위치 및 운영정보(충전소 ID 포함)_20230531.csv` | 기존 충전소 위치 분석 |
+
 ## 기능 구조 (Project Structure)
 
 ```
